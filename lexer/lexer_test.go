@@ -109,3 +109,10 @@ let result = add(five, ten);
 	}
 
 }
+
+func TestIsLetter(t *testing.T) {
+	res := isLetter('T')
+	if res != true {
+		t.Fatalf("T is not letter")
+	}
+}
