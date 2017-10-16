@@ -42,6 +42,9 @@ const (
 
 	EQ  = "=="
 	NEQ = "!="
+
+	LBRACKET = "["
+	RBRACKET = "]"
 )
 
 var keywords = map[string]TokenType{
