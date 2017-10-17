@@ -74,6 +74,25 @@ func TestFunctionApplication(t *testing.T) {
 	}
 }
 
+func TestEvalHash(t *testing.T) {
+	tests := []struct {
+		input string
+		expected string
+	} {
+		{`let a = {"hello": "world"}]; a["hello"]`, "world"},
+	}
+	for _, tt := range tests {
+		res := testEval(tt.input)
+		result, ok := res.(*object.String)
+		if !ok {
+			t.Errorf("object is not Hash")
+		}
+		if result.Value != tt.expected {
+			t.Errorf("expected %s got %s", tt.expected, result.Value)
+		}
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
