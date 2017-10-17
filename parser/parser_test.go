@@ -141,6 +141,10 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		//{"-a * b", "((-a) * b)"},
 		{"a + b * c", "(a + (b * c))"},
 		{"1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"},
+		{
+			"a * [1,2,3,4][b*c]*d",
+			"((a * ([1, 2, 3, 4][(b * c)])) * d)",
+		},
 	}
 
 	for _, tt := range tests {
@@ -250,6 +254,33 @@ func TestCallExpressionParsing(t *testing.T) {
 
 	if len(exp.Arguments) != 3 {
 		t.Fatalf("arguments shoud be 3, actual is %d", len(exp.Arguments))
+	}
+}
+
+func TestParsingArrayLiterals(t *testing.T) {
+	input := "[1,2,3,4,5]"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	array, ok := stmt.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Fatalf("exp is not array got=%T", stmt.Expression)
+	}
+	if len(array.Elements) != 5 {
+		t.Fatalf("len(array.Elements) not 5 got %d", len(array.Elements))
+	}
+	testIntegerLiteral(t, array.Elements[0], 1)
+	testIntegerLiteral(t, array.Elements[3], 4)
+}
+
+func testIntegerLiteral(t *testing.T, exp ast.Expression, expected int64) {
+	i, ok := exp.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("exp is not integer got %T", exp)
+	}
+	if i.Value != expected {
+		t.Fatalf("expected %d, got %d", expected, i)
 	}
 }
 
